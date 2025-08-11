@@ -81,3 +81,30 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`NOLA Buddy API listening on port ${PORT}`);
 });
+
+
+///////
+
+app.post('/nolaListPages', async (req, res) => {
+  try {
+    if (!NOTION_SECRET) return res.status(500).json({ error: 'Server missing NOTION_SECRET' });
+
+    const { databaseName } = req.body || {};
+    if (!databaseName) return res.status(400).json({ error: 'databaseName is required' });
+
+    const db = await findDatabaseByName(databaseName);
+    if (!db) return res.status(404).json({ error: `Database "${databaseName}" not found or not shared with integration.` });
+
+    const response = await notionPost(`/databases/${db.id}/query`, {});
+    const pages = response.results.map(page => {
+      const title = page.properties.Name?.title?.map(t => t.plain_text).join('') || '(Untitled)';
+      const status = page.properties.Status?.status?.name || 'No Status';
+      return { id: page.id, title, status };
+    });
+
+    res.json({ ok: true, count: pages.length, pages });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
