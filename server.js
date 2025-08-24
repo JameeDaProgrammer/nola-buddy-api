@@ -2,6 +2,26 @@ import 'dotenv/config';
 import express from 'express';
 import { google } from 'googleapis';
 
+// put near the top of server.js
+function getGooglePrivateKey() {
+  let k = process.env.GOOGLE_PRIVATE_KEY || "";
+  // strip accidental surrounding quotes
+  k = k.replace(/^"+|"+$/g, "");
+  // normalize Windows newlines
+  k = k.replace(/\r\n/g, "\n");
+  // convert escaped \n into real newlines
+  if (k.includes("\\n")) k = k.replace(/\\n/g, "\n");
+  return k;
+}
+
+const auth = new google.auth.JWT(
+  process.env.GOOGLE_CLIENT_EMAIL,
+  null,
+  getGooglePrivateKey(),  // 👈 use the sanitizer here
+  ["https://www.googleapis.com/auth/spreadsheets"]
+);
+const sheets = google.sheets({ version: "v4", auth });
+
 // -------------------- App bootstrap --------------------
 const app = express();
 app.use(express.json());
