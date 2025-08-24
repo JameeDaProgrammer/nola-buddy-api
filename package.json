@@ -2,17 +2,12 @@
   "name": "nola-buddy",
   "version": "1.0.0",
   "type": "module",
-  "engines": { "node": ">=18" },
-  "scripts": {
-    "start": "node server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "Nola Notion Buddy + Maal Secretary Notes (Sheets)",
+  "engines": { "node": "18.x" },
+  "scripts": { "start": "node server.js" },
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "googleapis": "^131.0.0"
-  }
+  },
+  "description": "Nola Notion Buddy + Maal Secretary Notes (Sheets)"
 }
